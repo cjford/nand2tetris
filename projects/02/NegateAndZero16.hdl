@@ -1,0 +1,20 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/02/Inc16.hdl
+
+/**
+ * 16-bit negate and zero:
+ * if zx then out[i] = 0
+ * if nx then out[i] = !in[i]
+ */
+
+CHIP NegateAndZero16 {
+    IN negate, zero, in[16];
+    OUT out[16];
+
+    PARTS:
+    Mux16(a=in, b=false, sel=zero, out=zeroed);
+    Not16(in=zeroed, out=negated);
+    Mux16(a=zeroed, b=negated, sel=negate, out=out);
+}
