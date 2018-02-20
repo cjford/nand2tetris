@@ -68,12 +68,18 @@ void *reverse_string(char *str) {
 
 void *decimal_to_binary(long decimal_num, char *output) {
   char bit_buffer[1];
+  int bit_count = 0;
   while (decimal_num > 0) {
     int rem = decimal_num % 2;
     sprintf(bit_buffer, "%i", rem);
     strcat(output, bit_buffer);
     decimal_num = decimal_num / 2;
+    bit_count++;
   }
 
+  int pad_count = 15 - bit_count;
+  for (int i = 0; i < pad_count; i++) {
+    strcat(output, "0");
+  }
   reverse_string(output);
 }
