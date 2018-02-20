@@ -1,13 +1,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-struct command {
-  char* type;
-  long symbol;
-  char* dest;
-  char* comp;
-  char* jmp;
-};
+#include "command.h"
 
 int set_curr_cmd(FILE *input_file, struct command *curr_cmd, char *cmd_buffer);
 int start_comment(char *cmd_buffer);

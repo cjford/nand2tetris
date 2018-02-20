@@ -5,10 +5,6 @@
 
 #include "parser.h"
 
-#define C_COMMAND "C_COMMAND"
-#define A_COMMAND "A_COMMAND"
-#define L_COMMAND "L_COMMAND"
-
 int set_curr_cmd(FILE *input_file, struct command *curr_cmd, char *cmd_buffer) {
   clear_cmd(curr_cmd);
   if (fgets(cmd_buffer, 100, input_file)) {
