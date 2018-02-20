@@ -8,7 +8,6 @@
 int set_curr_cmd(FILE *input_file, struct command *curr_cmd, char *cmd_buffer) {
   clear_cmd(curr_cmd);
   if (fgets(cmd_buffer, 100, input_file)) {
-    printf("===== cmd_buffer: %s", cmd_buffer);
     strip_comments(cmd_buffer);
     strip_whitespace(cmd_buffer);
     set_cmd_fields(curr_cmd, cmd_buffer);
