@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "command.h"
+#include "codes.h"
+
 char *dest(char *dest_string) {
   if (dest_string == NULL)             { return "000"; }
   if (strcmp(dest_string, "M") == 0)   { return "001"; }
@@ -82,4 +85,18 @@ void *decimal_to_binary(long decimal_num, char *output) {
     strcat(output, "0");
   }
   reverse_string(output);
+}
+
+void cmd_to_binary(struct command *curr_cmd, char *output) {
+  if (strcmp(curr_cmd -> type, A_COMMAND) == 0) {
+    char value[16] = "";
+    decimal_to_binary(curr_cmd -> symbol, value);
+    strcat(output, "0");
+    strcat(output, value);
+  } else {
+    strcat(output, "111");
+    strcat(output, comp(curr_cmd -> comp));
+    strcat(output, dest(curr_cmd -> dest));
+    strcat(output, jmp(curr_cmd -> jmp));
+  }
 }
