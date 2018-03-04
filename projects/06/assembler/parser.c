@@ -5,7 +5,7 @@
 
 #include "parser.h"
 
-int set_curr_cmd(FILE *input_file, struct command *curr_cmd, char *cmd_buffer) {
+int set_curr_cmd(FILE *input_file, Command *curr_cmd, char *cmd_buffer) {
   clear_cmd(curr_cmd);
   if (fgets(cmd_buffer, 100, input_file)) {
     strip_comments(cmd_buffer);
@@ -17,7 +17,7 @@ int set_curr_cmd(FILE *input_file, struct command *curr_cmd, char *cmd_buffer) {
   return 0;
 }
 
-void clear_cmd(struct command *curr_cmd) {
+void clear_cmd(Command *curr_cmd) {
   curr_cmd -> address = 0;
   curr_cmd -> type = NULL;
   curr_cmd -> dest = NULL;
@@ -72,7 +72,7 @@ int start_comment(char *cmd_buffer) {
   }
 }
 
-void set_cmd_fields(struct command *curr_cmd, char *cmd_buffer) {
+void set_cmd_fields(Command *curr_cmd, char *cmd_buffer) {
   if (strchr(cmd_buffer, '@')) {
     curr_cmd -> type = A_COMMAND;
     set_a_cmd_fields(curr_cmd, cmd_buffer);
@@ -81,10 +81,11 @@ void set_cmd_fields(struct command *curr_cmd, char *cmd_buffer) {
     set_c_cmd_fields(curr_cmd, cmd_buffer);
   } else if (strchr(cmd_buffer, '(') && strchr(cmd_buffer, ')')) {
     curr_cmd -> type = L_COMMAND;
+    set_l_cmd_fields(curr_cmd, cmd_buffer);
   }
 }
 
-void set_c_cmd_fields(struct command *curr_cmd, char *cmd_buffer) {
+void set_c_cmd_fields(Command *curr_cmd, char *cmd_buffer) {
   char *dest_end = strchr(cmd_buffer, '=');
   if (dest_end) {
     *dest_end = '\0';
@@ -103,11 +104,12 @@ void set_c_cmd_fields(struct command *curr_cmd, char *cmd_buffer) {
   }
 };
 
-void set_a_cmd_fields(struct command *curr_cmd, char *cmd_buffer) {
+void set_a_cmd_fields(Command *curr_cmd, char *cmd_buffer) {
   char **str_end;
   char *val = strchr(cmd_buffer, '@') + sizeof(char);
+  strcpy(curr_cmd -> symbol,  val);
   long i = strtol(val, str_end, 10);
   curr_cmd -> address=i;
 };
 
-void set_l_cmd_fields(struct command *curr_cmd, char *cmd_buffer) {  };
+void set_l_cmd_fields(Command *curr_cmd, char *cmd_buffer) {  };

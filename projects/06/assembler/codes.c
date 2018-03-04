@@ -87,7 +87,7 @@ void *decimal_to_binary(long decimal_num, char *output) {
   reverse_string(output);
 }
 
-void cmd_to_binary(struct command *curr_cmd, char *output) {
+void cmd_to_binary(Command *curr_cmd, char *output) {
   if (strcmp(curr_cmd -> type, A_COMMAND) == 0) {
     char value[16] = "";
     decimal_to_binary(curr_cmd -> address, value);

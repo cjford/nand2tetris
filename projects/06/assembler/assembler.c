@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 
   if (input_file == NULL || output_file == NULL) {exit(EXIT_FAILURE);}
 
-  struct command curr_cmd;
+  Command curr_cmd;
   char cmd_buffer[100];
   char instruction_buffer[15];
 

@@ -5,13 +5,13 @@
 #define A_COMMAND "A_COMMAND"
 #define L_COMMAND "L_COMMAND"
 
-struct command {
+typedef struct Command {
   char* type;
   long address;
   char symbol[20];
   char* dest;
   char* comp;
   char* jmp;
-};
+} Command;
 
 #endif
