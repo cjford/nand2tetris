@@ -7,7 +7,8 @@
 
 struct command {
   char* type;
-  long symbol;
+  long address;
+  char symbol[20];
   char* dest;
   char* comp;
   char* jmp;

@@ -18,7 +18,7 @@ int set_curr_cmd(FILE *input_file, struct command *curr_cmd, char *cmd_buffer) {
 }
 
 void clear_cmd(struct command *curr_cmd) {
-  curr_cmd -> symbol = 0;
+  curr_cmd -> address = 0;
   curr_cmd -> type = NULL;
   curr_cmd -> dest = NULL;
   curr_cmd -> comp = NULL;
@@ -107,7 +107,7 @@ void set_a_cmd_fields(struct command *curr_cmd, char *cmd_buffer) {
   char **str_end;
   char *val = strchr(cmd_buffer, '@') + sizeof(char);
   long i = strtol(val, str_end, 10);
-  curr_cmd -> symbol=i;
+  curr_cmd -> address=i;
 };
 
 void set_l_cmd_fields(struct command *curr_cmd, char *cmd_buffer) {  };

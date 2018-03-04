@@ -90,7 +90,7 @@ void *decimal_to_binary(long decimal_num, char *output) {
 void cmd_to_binary(struct command *curr_cmd, char *output) {
   if (strcmp(curr_cmd -> type, A_COMMAND) == 0) {
     char value[16] = "";
-    decimal_to_binary(curr_cmd -> symbol, value);
+    decimal_to_binary(curr_cmd -> address, value);
     strcat(output, "0");
     strcat(output, value);
   } else {
