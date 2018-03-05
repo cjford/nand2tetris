@@ -7,6 +7,8 @@
 
 int set_curr_cmd(FILE *input_file, Command *curr_cmd, char *cmd_buffer) {
   clear_cmd(curr_cmd);
+  memset(cmd_buffer, 0, strlen(cmd_buffer));
+
   if (fgets(cmd_buffer, 100, input_file)) {
     strip_comments(cmd_buffer);
     strip_whitespace(cmd_buffer);
@@ -23,6 +25,7 @@ void clear_cmd(Command *curr_cmd) {
   curr_cmd -> dest = NULL;
   curr_cmd -> comp = NULL;
   curr_cmd -> jmp  = NULL;
+  memset(curr_cmd -> symbol, 0, strlen(curr_cmd -> symbol));
 }
 
 void strip_comments(char *cmd_buffer) {
@@ -112,4 +115,6 @@ void set_a_cmd_fields(Command *curr_cmd, char *cmd_buffer) {
   curr_cmd -> address=i;
 };
 
-void set_l_cmd_fields(Command *curr_cmd, char *cmd_buffer) {  };
+void set_l_cmd_fields(Command *curr_cmd, char *cmd_buffer) {
+  strncpy(curr_cmd->symbol, (cmd_buffer + sizeof(char)), (strlen(cmd_buffer) - 2));
+};

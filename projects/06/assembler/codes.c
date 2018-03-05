@@ -93,7 +93,7 @@ void cmd_to_binary(Command *curr_cmd, char *output) {
     decimal_to_binary(curr_cmd -> address, value);
     strcat(output, "0");
     strcat(output, value);
-  } else {
+  } else if(strcmp(curr_cmd -> type, C_COMMAND) == 0) {
     strcat(output, "111");
     strcat(output, comp(curr_cmd -> comp));
     strcat(output, dest(curr_cmd -> dest));

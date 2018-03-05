@@ -4,6 +4,7 @@
 
 #include "parser.h"
 #include "codes.h"
+#include "symbol_table.h"
 
 #define OUTPUT_EXTENSION ".hack"
 
@@ -55,15 +56,39 @@ int main(int argc, char **argv) {
   printf("Outputting to file %s\n", output_filename);
   free(output_filename);
 
-  if (input_file == NULL || output_file == NULL) {exit(EXIT_FAILURE);}
+  if (input_file == NULL || output_file == NULL) { exit(EXIT_FAILURE); }
 
   Command curr_cmd;
   char cmd_buffer[100];
   char instruction_buffer[15];
 
+  int curr_address = 0;
+
+  SymbolEntry *st_head = st_initialize();
+
+  while(set_curr_cmd(input_file, &curr_cmd, cmd_buffer)) {
+    if(!curr_cmd.type) { continue; }
+
+    if(strcmp(curr_cmd.type, L_COMMAND) == 0) {
+
+      if(st_head->symbol == NULL) {
+        strcpy(st_head->symbol,  curr_cmd.symbol);
+        st_head->address = curr_address;
+      } else {
+        st_add_entry(st_head, curr_cmd.symbol, curr_address);
+      }
+
+    } else {
+      curr_address++;
+    }
+  }
+
+  rewind(input_file);
+
   while(set_curr_cmd(input_file, &curr_cmd, cmd_buffer)) {
     strcpy(instruction_buffer, "");
-    if (curr_cmd.type) {
+    if (curr_cmd.type && strcmp(curr_cmd.type, L_COMMAND) != 0) {
+      st_translate_cmd(st_head, &curr_cmd);
       cmd_to_binary(&curr_cmd, instruction_buffer);
       fprintf(output_file, "%s\n", instruction_buffer);
     }
@@ -71,4 +96,5 @@ int main(int argc, char **argv) {
 
   printf("Done\n");
   fclose(output_file);
+  fclose(input_file);
 }
