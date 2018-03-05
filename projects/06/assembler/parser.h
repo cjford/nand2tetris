@@ -1,6 +1,11 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
 #include "command.h"
 
 int set_curr_cmd(FILE *input_file, Command *curr_cmd, char *cmd_buffer);

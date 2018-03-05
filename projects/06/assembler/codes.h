@@ -1,6 +1,12 @@
 #ifndef CODES_H
 #define CODES_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "command.h"
+
 char *dest(char *dest_string);
 char *comp(char *comp_string);
 char *jmp(char *jmp_string);
