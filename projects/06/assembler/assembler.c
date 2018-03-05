@@ -66,14 +66,14 @@ int main(int argc, char **argv) {
 
   SymbolEntry *st_head = st_initialize();
 
-  while(set_curr_cmd(input_file, &curr_cmd, cmd_buffer)) {
-    if(!curr_cmd.type) { continue; }
+  while (set_curr_cmd(input_file, &curr_cmd, cmd_buffer)) {
+    if (!curr_cmd.type) { continue; }
 
-    if(strcmp(curr_cmd.type, L_COMMAND) == 0) {
+    if (strcmp(curr_cmd.type, L_COMMAND) == 0) {
 
-      if(st_head->symbol == NULL) {
-        strcpy(st_head->symbol,  curr_cmd.symbol);
-        st_head->address = curr_address;
+      if (st_head -> symbol == NULL) {
+        strcpy(st_head -> symbol,  curr_cmd.symbol);
+        st_head -> address = curr_address;
       } else {
         st_add_entry(st_head, curr_cmd.symbol, curr_address);
       }
@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
 
   rewind(input_file);
 
-  while(set_curr_cmd(input_file, &curr_cmd, cmd_buffer)) {
+  while (set_curr_cmd(input_file, &curr_cmd, cmd_buffer)) {
     strcpy(instruction_buffer, "");
     if (curr_cmd.type && strcmp(curr_cmd.type, L_COMMAND) != 0) {
       st_translate_cmd(st_head, &curr_cmd);

@@ -30,7 +30,7 @@ void clear_cmd(Command *curr_cmd) {
 
 void strip_comments(char *cmd_buffer) {
   int i = 0;
-  for(i; i < strlen(cmd_buffer); i++) {
+  for (i; i < strlen(cmd_buffer); i++) {
     if (start_comment(&cmd_buffer[i])) {
       *(cmd_buffer+(sizeof(char)*i)) = '\0';
     }
@@ -40,11 +40,11 @@ void strip_comments(char *cmd_buffer) {
 void strip_whitespace(char *cmd_buffer) {
   int start = 0;
   int end = strlen(cmd_buffer) - 1;
-  while(isspace((unsigned char) cmd_buffer[start])) {
+  while (isspace((unsigned char) cmd_buffer[start])) {
     start++;
   }
 
-  while((end >= start) && (isspace((unsigned char) cmd_buffer[end]))) {
+  while ((end >= start) && (isspace((unsigned char) cmd_buffer[end]))) {
     end--;
   }
 
@@ -58,7 +58,7 @@ void strip_whitespace(char *cmd_buffer) {
 
 int is_blank(char *cmd_buffer) {
   int i = 0;
-  for(i; i < strlen(cmd_buffer); i++) {
+  for (i; i < strlen(cmd_buffer); i++) {
     if (!isspace((unsigned char) cmd_buffer[i])){
       return 0;
     }
@@ -111,10 +111,11 @@ void set_a_cmd_fields(Command *curr_cmd, char *cmd_buffer) {
   char **str_end;
   char *val = strchr(cmd_buffer, '@') + sizeof(char);
   strcpy(curr_cmd -> symbol,  val);
+
   long i = strtol(val, str_end, 10);
-  curr_cmd -> address=i;
+  curr_cmd -> address = i;
 };
 
 void set_l_cmd_fields(Command *curr_cmd, char *cmd_buffer) {
-  strncpy(curr_cmd->symbol, (cmd_buffer + sizeof(char)), (strlen(cmd_buffer) - 2));
+  strncpy(curr_cmd -> symbol, (cmd_buffer + sizeof(char)), (strlen(cmd_buffer) - 2));
 };

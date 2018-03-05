@@ -62,7 +62,8 @@ char *jmp(char *jmp_string) {
 void *reverse_string(char *str) {
   int i = 0;
   int j = strlen(str) - 1;
-  for(i, j; i < (strlen(str) / 2); i++, j--) {
+
+  for (i, j; i < (strlen(str) / 2); i++, j--) {
     char tmp = str[j];
     str[j] = str[i];
     str[i] = tmp;
@@ -72,6 +73,7 @@ void *reverse_string(char *str) {
 void *decimal_to_binary(long decimal_num, char *output) {
   char bit_buffer[1];
   int bit_count = 0;
+
   while (decimal_num > 0) {
     int rem = decimal_num % 2;
     sprintf(bit_buffer, "%i", rem);
@@ -93,7 +95,7 @@ void cmd_to_binary(Command *curr_cmd, char *output) {
     decimal_to_binary(curr_cmd -> address, value);
     strcat(output, "0");
     strcat(output, value);
-  } else if(strcmp(curr_cmd -> type, C_COMMAND) == 0) {
+  } else if (strcmp(curr_cmd -> type, C_COMMAND) == 0) {
     strcat(output, "111");
     strcat(output, comp(curr_cmd -> comp));
     strcat(output, dest(curr_cmd -> dest));
