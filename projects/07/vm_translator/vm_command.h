@@ -17,6 +17,7 @@ typedef struct vm_command {
   char* cmd;
   char* arg1;
   char* arg2;
+  int index;
 } vm_command;
 
 #endif
