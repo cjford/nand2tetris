@@ -66,14 +66,6 @@ void write_neg(vm_command *command, FILE *output_file) {
 }
 
 void write_eq(vm_command *command, FILE *output_file) {
-  fprintf(output_file, "(RETURN_EQ_%i)\n", command -> index );
-  fputs("@SP\n", output_file);
-  fputs("A=M-1\n", output_file);
-  fputs("A=A-1\n", output_file);
-  fputs("M=1\n", output_file);
-  fprintf(output_file, "@DEC_SP_%i\n", command -> index );
-  fputs("0;JMP\n", output_file);
-
   fputs("@SP\n", output_file);
   fputs("A=M-1\n", output_file);
 
@@ -95,20 +87,27 @@ void write_eq(vm_command *command, FILE *output_file) {
   fprintf(output_file, "@RETURN_EQ_%i\n", command -> index );
   fputs("D;JEQ\n", output_file);
 
+  // Return 0 (false)
+  fputs("@SP\n", output_file);
+  fputs("A=M-1\n", output_file);
+  fputs("A=A-1\n", output_file);
+  fputs("M=0\n", output_file);
+  fprintf(output_file, "@DEC_SP_%i\n", command -> index );
+  fputs("0;JMP\n", output_file);
+
+  // Return -1 (true)
+  fprintf(output_file, "(RETURN_EQ_%i)\n", command -> index );
+  fputs("@SP\n", output_file);
+  fputs("A=M-1\n", output_file);
+  fputs("A=A-1\n", output_file);
+  fputs("M=-1\n", output_file);
+
   fprintf(output_file, "(DEC_SP_%i)\n", command -> index );
   fputs("@SP\n", output_file);
   fputs("M=M-1\n", output_file);
 }
 
 void write_gt(vm_command *command, FILE *output_file) {
-  fprintf(output_file, "(RETURN_GT_%i)\n", command -> index );
-  fputs("@SP\n", output_file);
-  fputs("A=M-1\n", output_file);
-  fputs("A=A-1\n", output_file);
-  fputs("M=1\n", output_file);
-  fprintf(output_file, "@DEC_SP_%i\n", command -> index );
-  fputs("0;JMP\n", output_file);
-
   fputs("@SP\n", output_file);
   fputs("A=M-1\n", output_file);
 
@@ -122,10 +121,23 @@ void write_gt(vm_command *command, FILE *output_file) {
   fputs("D=M\n", output_file);
 
   fputs("@R13\n", output_file);
-  fputs("D=M-D\n", output_file);
+  fputs("D=D-M\n", output_file);
 
   fprintf(output_file, "@RETURN_GT_%i\n", command -> index );
-  fputs("D;JLT\n", output_file);
+  fputs("D;JGT\n", output_file);
+
+  fputs("@SP\n", output_file);
+  fputs("A=M-1\n", output_file);
+  fputs("A=A-1\n", output_file);
+  fputs("M=0\n", output_file);
+  fprintf(output_file, "@DEC_SP_%i\n", command -> index );
+  fputs("0;JMP\n", output_file);
+
+  fprintf(output_file, "(RETURN_GT_%i)\n", command -> index );
+  fputs("@SP\n", output_file);
+  fputs("A=M-1\n", output_file);
+  fputs("A=A-1\n", output_file);
+  fputs("M=-1\n", output_file);
 
   fprintf(output_file, "(DEC_SP_%i)\n", command -> index );
   fputs("@SP\n", output_file);
@@ -133,14 +145,6 @@ void write_gt(vm_command *command, FILE *output_file) {
 }
 
 void write_lt(vm_command *command, FILE *output_file) {
-  fprintf(output_file, "(RETURN_LT_%i)\n", command -> index );
-  fputs("@SP\n", output_file);
-  fputs("A=M-1\n", output_file);
-  fputs("A=A-1\n", output_file);
-  fputs("M=1\n", output_file);
-  fprintf(output_file, "@DEC_SP_%i\n", command -> index );
-  fputs("0;JMP\n", output_file);
-
   fputs("@SP\n", output_file);
   fputs("A=M-1\n", output_file);
 
@@ -154,10 +158,23 @@ void write_lt(vm_command *command, FILE *output_file) {
   fputs("D=M\n", output_file);
 
   fputs("@R13\n", output_file);
-  fputs("D=M-D\n", output_file);
+  fputs("D=D-M\n", output_file);
 
   fprintf(output_file, "@RETURN_LT_%i\n", command -> index );
-  fputs("D;JGT\n", output_file);
+  fputs("D;JLT\n", output_file);
+
+  fputs("@SP\n", output_file);
+  fputs("A=M-1\n", output_file);
+  fputs("A=A-1\n", output_file);
+  fputs("M=0\n", output_file);
+  fprintf(output_file, "@DEC_SP_%i\n", command -> index );
+  fputs("0;JMP\n", output_file);
+
+  fprintf(output_file, "(RETURN_LT_%i)\n", command -> index );
+  fputs("@SP\n", output_file);
+  fputs("A=M-1\n", output_file);
+  fputs("A=A-1\n", output_file);
+  fputs("M=-1\n", output_file);
 
   fprintf(output_file, "(DEC_SP_%i)\n", command -> index );
   fputs("@SP\n", output_file);
