@@ -50,7 +50,7 @@ void write_sub(vm_command *command, FILE *output_file) {
   fputs("A=M-1\n", output_file);
   fputs("D=M\n", output_file);
   fputs("A=A-1\n", output_file);
-  fputs("M=D-M\n", output_file);
+  fputs("M=M-D\n", output_file);
   fputs("@SP\n", output_file);
   fputs("M=M-1\n", output_file);
 }
