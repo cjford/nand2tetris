@@ -208,12 +208,19 @@ void write_not(vm_command *command, FILE *output_file) {
 void write_push(vm_command *command, FILE *output_file) {
   if (strcmp(command -> arg1, "constant") == 0) {
     fprintf(output_file, "@%s\n", command -> arg2);
+    fputs("D=A\n", output_file);
   } else {
-    fprintf(output_file, "@%s\n", command -> arg1);
-    fprintf(output_file, "A=A+%s\n", command -> arg2);
+    const char *segment_symbol = get_segment_symbol(command -> arg1);
+    fprintf(output_file, "@%s\n", segment_symbol);
+
+    if (strcmp(command -> arg1, "temp") != 0) {
+      fputs("A=M\n", output_file);
+    }
+
+    write_offset_increment(command -> arg2, output_file);
+    fputs("D=M\n", output_file);
   }
 
-  fputs("D=A\n", output_file);
   fputs("@SP\n", output_file);
   fputs("A=M\n", output_file);
   fputs("M=D\n", output_file);
@@ -222,13 +229,38 @@ void write_push(vm_command *command, FILE *output_file) {
 }
 
 void write_pop(vm_command *command, FILE *output_file) {
+  const char *segment_symbol = get_segment_symbol(command -> arg1);
   fputs("@SP\n", output_file);
-  fputs("A=M\n", output_file);
+  fputs("A=M-1\n", output_file);
   fputs("D=M\n", output_file);
   fputs("@SP\n", output_file);
   fputs("M=M-1\n", output_file);
-  fprintf(output_file, "@%s\n", command -> arg1);
-  fprintf(output_file, "A=A+%s\n", command -> arg2);
-  fputs("\n", output_file);
+
+  fprintf(output_file, "@%s\n", segment_symbol);
+  if (strcmp(command -> arg1, "temp") != 0) {
+    fputs("A=M\n", output_file);
+  }
+
+  write_offset_increment(command -> arg2, output_file);
   fputs("M=D\n", output_file);
+}
+
+const char *get_segment_symbol(char *segment_name) {
+  if (strcmp(segment_name, "argument") == 0) { return "ARG"; }
+  else if (strcmp(segment_name, "local") == 0) { return "LCL"; }
+  else if (strcmp(segment_name, "this") == 0) { return "THIS"; }
+  else if (strcmp(segment_name, "that") == 0) { return "THAT"; }
+  else if (strcmp(segment_name, "temp") == 0) { return "R5"; }
+  else {
+    printf("Error: Invalid memory segment: %s\n", segment_name);
+    exit(EXIT_FAILURE);
+  }
+}
+
+void write_offset_increment(char *offset_string, FILE *output_file) {
+  char *endptr = "";
+  int offset = strtol(offset_string, &endptr, 10);
+  for (int i = 0; i < offset; i++) {
+    fputs("A=A+1\n", output_file);
+  }
 }

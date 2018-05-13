@@ -19,5 +19,7 @@ void write_or(vm_command *command, FILE *output_file);
 void write_not(vm_command *command, FILE *output_file);
 void write_push(vm_command *command, FILE *output_file);
 void write_pop(vm_command *command, FILE *output_file);
+const char *get_segment_symbol(char *segment_name);
+void write_offset_increment(char *offset_string, FILE *output_file);
 
 #endif
