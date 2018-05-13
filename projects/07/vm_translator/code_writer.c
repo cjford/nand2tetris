@@ -213,7 +213,7 @@ void write_push(vm_command *command, FILE *output_file) {
     const char *segment_symbol = get_segment_symbol(command -> arg1);
     fprintf(output_file, "@%s\n", segment_symbol);
 
-    if (strcmp(command -> arg1, "temp") != 0) {
+    if (is_indirect_address(command -> arg1)) {
       fputs("A=M\n", output_file);
     }
 
@@ -237,7 +237,7 @@ void write_pop(vm_command *command, FILE *output_file) {
   fputs("M=M-1\n", output_file);
 
   fprintf(output_file, "@%s\n", segment_symbol);
-  if (strcmp(command -> arg1, "temp") != 0) {
+  if (is_indirect_address(command -> arg1)) {
     fputs("A=M\n", output_file);
   }
 
@@ -248,7 +248,7 @@ void write_pop(vm_command *command, FILE *output_file) {
 const char *get_segment_symbol(char *segment_name) {
   if (strcmp(segment_name, "argument") == 0) { return "ARG"; }
   else if (strcmp(segment_name, "local") == 0) { return "LCL"; }
-  else if (strcmp(segment_name, "this") == 0) { return "THIS"; }
+  else if ((strcmp(segment_name, "this") == 0) || strcmp(segment_name, "pointer") == 0) { return "THIS"; }
   else if (strcmp(segment_name, "that") == 0) { return "THAT"; }
   else if (strcmp(segment_name, "temp") == 0) { return "R5"; }
   else {
@@ -263,4 +263,11 @@ void write_offset_increment(char *offset_string, FILE *output_file) {
   for (int i = 0; i < offset; i++) {
     fputs("A=A+1\n", output_file);
   }
+}
+
+int is_indirect_address(char *segment_name) {
+  return (
+    strcmp(segment_name, "temp")    != 0 &&
+    strcmp(segment_name, "pointer") != 0
+  );
 }
