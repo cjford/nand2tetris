@@ -37,7 +37,18 @@ int main(int argc, char **argv) {
     printf("Parsing file %s\n", argv[1]);
   }
 
-  char *output_filename = get_output_filename(argv[1]);
+  char *filename = malloc(sizeof(argv[1]));
+  strcpy(filename, argv[1]);
+
+  char *extension_delim = strchr(filename, '.');
+  *extension_delim = '\0';
+
+  char static_prefix[sizeof(filename)];
+  strcpy(static_prefix, filename);
+
+  strcat(filename, OUTPUT_EXTENSION);
+  char *output_filename =  filename;
+
   FILE *output_file = fopen(output_filename, "w");
   FILE *input_file = fopen(argv[1], "r");
   printf("Outputting to file %s\n", output_filename);
@@ -49,7 +60,7 @@ int main(int argc, char **argv) {
 
   while (set_curr_cmd(input_file, &curr_cmd, cmd_buffer)) {
     if(curr_cmd.cmd != NULL && strcmp(curr_cmd.cmd, "") != 0) {
-      write_cmd(&curr_cmd, output_file);
+      write_cmd(&curr_cmd, output_file, static_prefix);
     }
   }
 }

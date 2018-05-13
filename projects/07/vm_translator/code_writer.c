@@ -1,6 +1,6 @@
 #include "code_writer.h"
 
-void write_cmd(vm_command *command, FILE *output_file) {
+void write_cmd(vm_command *command, FILE *output_file, char *static_prefix) {
   printf("=== write_cmd:\n");
   printf("cmd: %s \n", command -> cmd);
   printf("arg1: %s \n", command -> arg1);
@@ -26,9 +26,9 @@ void write_cmd(vm_command *command, FILE *output_file) {
   }  else if (strcmp(command -> cmd, C_NOT) == 0) {
     write_not(command, output_file);
   } else if (strcmp(command -> cmd, C_PUSH) == 0) {
-    write_push(command, output_file);
+    write_push(command, output_file, static_prefix);
   } else if (strcmp(command -> cmd, C_POP) == 0) {
-    write_pop(command, output_file);
+    write_pop(command, output_file, static_prefix);
   } else {
     printf("ERROR: invalid command in VM input: %s\n", command -> cmd);
     exit(EXIT_FAILURE);
@@ -205,12 +205,12 @@ void write_not(vm_command *command, FILE *output_file) {
   fputs("M=!D\n", output_file);
 }
 
-void write_push(vm_command *command, FILE *output_file) {
+void write_push(vm_command *command, FILE *output_file, char *static_prefix) {
   if (strcmp(command -> arg1, "constant") == 0) {
     fprintf(output_file, "@%s\n", command -> arg2);
     fputs("D=A\n", output_file);
   } else {
-    const char *segment_symbol = get_segment_symbol(command -> arg1);
+    const char *segment_symbol = get_segment_symbol(command -> arg1, static_prefix);
     fprintf(output_file, "@%s\n", segment_symbol);
 
     if (is_indirect_address(command -> arg1)) {
@@ -228,8 +228,8 @@ void write_push(vm_command *command, FILE *output_file) {
   fputs("M=M+1\n", output_file);
 }
 
-void write_pop(vm_command *command, FILE *output_file) {
-  const char *segment_symbol = get_segment_symbol(command -> arg1);
+void write_pop(vm_command *command, FILE *output_file, char *static_prefix) {
+  const char *segment_symbol = get_segment_symbol(command -> arg1, static_prefix);
   fputs("@SP\n", output_file);
   fputs("A=M-1\n", output_file);
   fputs("D=M\n", output_file);
@@ -245,12 +245,13 @@ void write_pop(vm_command *command, FILE *output_file) {
   fputs("M=D\n", output_file);
 }
 
-const char *get_segment_symbol(char *segment_name) {
+const char *get_segment_symbol(char *segment_name, char *static_prefix) {
   if (strcmp(segment_name, "argument") == 0) { return "ARG"; }
   else if (strcmp(segment_name, "local") == 0) { return "LCL"; }
   else if ((strcmp(segment_name, "this") == 0) || strcmp(segment_name, "pointer") == 0) { return "THIS"; }
-  else if (strcmp(segment_name, "that") == 0) { return "THAT"; }
   else if (strcmp(segment_name, "temp") == 0) { return "R5"; }
+  else if (strcmp(segment_name, "that") == 0) { return "THAT"; }
+  else if (strcmp(segment_name, "static") == 0) { return static_prefix; }
   else {
     printf("Error: Invalid memory segment: %s\n", segment_name);
     exit(EXIT_FAILURE);
