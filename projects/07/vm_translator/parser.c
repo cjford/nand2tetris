@@ -18,6 +18,7 @@ void clear_cmd(vm_command *curr_cmd) {
   curr_cmd -> cmd = NULL;
   curr_cmd -> arg1 = NULL;
   curr_cmd -> arg2 = NULL;
+  curr_cmd -> arg3 = NULL;
 }
 
 void strip_comments(char *cmd_buffer) {
@@ -86,6 +87,7 @@ void set_cmd_fields(vm_command *curr_cmd, char *cmd_buffer) {
     } else {
       curr_cmd -> arg1 = tokens[0];
       curr_cmd -> arg2 = tokens[1];
+      curr_cmd -> arg3 = tokens[2];
     }
 
     curr_cmd -> index++;

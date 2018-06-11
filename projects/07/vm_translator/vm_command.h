@@ -16,11 +16,14 @@
 #define C_LABEL "label"
 #define C_GOTO "goto"
 #define C_IF_GOTO "if-goto"
+#define C_FUNCTION "function"
+#define C_RETURN "return"
 
 typedef struct vm_command {
   char* cmd;
   char* arg1;
   char* arg2;
+  char* arg3;
   int index;
 } vm_command;
 

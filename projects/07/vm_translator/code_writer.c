@@ -5,6 +5,7 @@ void write_cmd(vm_command *command, FILE *output_file, char *static_prefix) {
   printf("cmd: %s \n", command -> cmd);
   printf("arg1: %s \n", command -> arg1);
   printf("arg2: %s \n", command -> arg2);
+  printf("arg3: %s \n", command -> arg3);
   printf("index: %i \n", command -> index);
 
   if(strcmp(command -> cmd, C_ADD) == 0) {
@@ -35,6 +36,10 @@ void write_cmd(vm_command *command, FILE *output_file, char *static_prefix) {
     write_goto(command, output_file);
   } else if (strcmp(command -> cmd, C_IF_GOTO) == 0) {
     write_if_goto(command, output_file);
+  } else if (strcmp(command -> cmd, C_FUNCTION) == 0) {
+    write_function(command, output_file);
+  } else if (strcmp(command -> cmd, C_RETURN) == 0) {
+    write_return(command, output_file);
   } else {
     printf("ERROR: invalid command in VM input: %s\n", command -> cmd);
     exit(EXIT_FAILURE);
@@ -270,6 +275,76 @@ void write_if_goto(vm_command *command, FILE *output_file) {
   fputs("D;JNE\n", output_file);
 }
 
+void write_function(vm_command *command, FILE *output_file) {
+  fprintf(output_file, "(%s)\n", command -> arg2);
+
+  char *endptr = "";
+  int local_count = strtol(command -> arg3, &endptr, 10);
+  for (int i = 0; i < local_count; i++) {
+    fputs("@SP\n", output_file);
+    fputs("A=M\n", output_file);
+    fputs("M=0\n", output_file);
+    fputs("@SP\n", output_file);
+    fputs("M=M+1\n", output_file);
+  }
+}
+
+void write_return(vm_command *command, FILE *output_file) {
+  fputs("@LCL\n", output_file);
+  fputs("D=M\n", output_file);
+  fputs("@R13\n", output_file);
+  fputs("M=D\n", output_file);
+
+  fputs("@LCL\n", output_file);
+  fputs("A=M\n", output_file);
+  write_offset_decrement("5", output_file);
+  fputs("D=A\n", output_file);
+  fputs("@R14\n", output_file);
+  fputs("M=D\n", output_file);
+
+  command -> arg1 = "argument";
+  command -> arg2 = "0";
+  write_pop(command, output_file, "");
+
+  fputs("@ARG\n", output_file);
+  fputs("D=M+1\n", output_file);
+  fputs("@SP\n", output_file);
+  fputs("M=D\n", output_file);
+
+  fputs("@R13\n", output_file);
+  fputs("A=M\n", output_file);
+  write_offset_decrement("1", output_file);
+  fputs("A=M\n", output_file);
+  fputs("D=A\n", output_file);
+  fputs("@THAT\n", output_file);
+  fputs("M=D\n", output_file);
+
+  fputs("@R13\n", output_file);
+  fputs("A=M\n", output_file);
+  write_offset_decrement("2", output_file);
+  fputs("D=M\n", output_file);
+  fputs("@THIS\n", output_file);
+  fputs("M=D\n", output_file);
+
+  fputs("@R13\n", output_file);
+  fputs("A=M\n", output_file);
+  write_offset_decrement("3", output_file);
+  fputs("D=M\n", output_file);
+  fputs("@ARG\n", output_file);
+  fputs("M=D\n", output_file);
+
+  fputs("@R13\n", output_file);
+  fputs("A=M\n", output_file);
+  write_offset_decrement("4", output_file);
+  fputs("D=M\n", output_file);
+  fputs("@LCL\n", output_file);
+  fputs("M=D\n", output_file);
+
+  fputs("@R14\n", output_file);
+  fputs("A=M\n", output_file);
+  fputs("0;JMP\n", output_file);
+}
+
 const char *get_segment_symbol(char *segment_name, char *static_prefix) {
   if (strcmp(segment_name, "argument") == 0) { return "ARG"; }
   else if (strcmp(segment_name, "local") == 0) { return "LCL"; }
@@ -288,6 +363,14 @@ void write_offset_increment(char *offset_string, FILE *output_file) {
   int offset = strtol(offset_string, &endptr, 10);
   for (int i = 0; i < offset; i++) {
     fputs("A=A+1\n", output_file);
+  }
+}
+
+void write_offset_decrement(char *offset_string, FILE *output_file) {
+  char *endptr = "";
+  int offset = strtol(offset_string, &endptr, 10);
+  for (int i = 0; i < offset; i++) {
+    fputs("A=A-1\n", output_file);
   }
 }
 
