@@ -29,6 +29,12 @@ void write_cmd(vm_command *command, FILE *output_file, char *static_prefix) {
     write_push(command, output_file, static_prefix);
   } else if (strcmp(command -> cmd, C_POP) == 0) {
     write_pop(command, output_file, static_prefix);
+  } else if (strcmp(command -> cmd, C_LABEL) == 0) {
+    write_label(command, output_file);
+  } else if (strcmp(command -> cmd, C_GOTO) == 0) {
+    write_goto(command, output_file);
+  } else if (strcmp(command -> cmd, C_IF_GOTO) == 0) {
+    write_if_goto(command, output_file);
   } else {
     printf("ERROR: invalid command in VM input: %s\n", command -> cmd);
     exit(EXIT_FAILURE);
@@ -243,6 +249,25 @@ void write_pop(vm_command *command, FILE *output_file, char *static_prefix) {
 
   write_offset_increment(command -> arg2, output_file);
   fputs("M=D\n", output_file);
+}
+
+void write_label(vm_command *command, FILE *output_file) {
+  fprintf(output_file, "(%s)\n", command -> arg2);
+}
+
+void write_goto(vm_command *command, FILE *output_file) {
+  fprintf(output_file, "@%s\n", command -> arg2);
+  fputs("0;JMP\n", output_file);
+}
+
+void write_if_goto(vm_command *command, FILE *output_file) {
+  fputs("@SP\n", output_file);
+  fputs("A=M-1\n", output_file);
+  fputs("D=M\n", output_file);
+  fputs("@SP\n", output_file);
+  fputs("M=M-1\n", output_file);
+  fprintf(output_file, "@%s\n", command -> arg2);
+  fputs("D;JNE\n", output_file);
 }
 
 const char *get_segment_symbol(char *segment_name, char *static_prefix) {

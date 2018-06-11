@@ -85,6 +85,7 @@ void set_cmd_fields(vm_command *curr_cmd, char *cmd_buffer) {
       curr_cmd -> arg2 = tokens[2];
     } else {
       curr_cmd -> arg1 = tokens[0];
+      curr_cmd -> arg2 = tokens[1];
     }
 
     curr_cmd -> index++;

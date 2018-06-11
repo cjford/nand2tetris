@@ -13,6 +13,10 @@
 #define C_OR "or"
 #define C_NOT "not"
 
+#define C_LABEL "label"
+#define C_GOTO "goto"
+#define C_IF_GOTO "if-goto"
+
 typedef struct vm_command {
   char* cmd;
   char* arg1;
