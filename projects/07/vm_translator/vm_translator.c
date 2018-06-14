@@ -58,6 +58,7 @@ int main(int argc, char **argv) {
   char cmd_buffer[100];
   if (input_file == NULL || output_file == NULL) { exit(EXIT_FAILURE); }
 
+  write_init(output_file);
   while (set_curr_cmd(input_file, &curr_cmd, cmd_buffer)) {
     if(curr_cmd.cmd != NULL && strcmp(curr_cmd.cmd, "") != 0) {
       write_cmd(&curr_cmd, output_file, static_prefix);

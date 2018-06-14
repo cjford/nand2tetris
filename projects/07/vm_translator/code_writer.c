@@ -405,6 +405,19 @@ void write_call(vm_command *command, FILE *output_file) {
   fprintf(output_file, "(RETURN_%s_%i)\n", command -> arg2, command -> index);
 }
 
+void write_init(FILE *output_file) {
+  fputs("@256\n", output_file);
+  fputs("D=A\n", output_file);
+  fputs("@SP\n", output_file);
+  fputs("M=D\n", output_file);
+
+  vm_command init_call;
+  init_call.arg2 = "Sys.init";
+  init_call.arg3 = "0";
+  init_call.index = 0;
+  write_call(&init_call, output_file);
+}
+
 const char *get_segment_symbol(char *segment_name, char *static_prefix) {
   if (strcmp(segment_name, "argument") == 0) { return "ARG"; }
   else if (strcmp(segment_name, "local") == 0) { return "LCL"; }
