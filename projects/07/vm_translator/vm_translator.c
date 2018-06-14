@@ -1,67 +1,58 @@
 #include "vm_translator.h"
 
-char *get_output_filename(char* input_filename) {
-  char *filename = malloc(sizeof(input_filename));
-  strcpy(filename, input_filename);
+void translate_file(FILE *input_file, FILE *output_file, char *static_prefix) {
+  vm_command curr_cmd;
+  curr_cmd.index = 0;
+  char cmd_buffer[100];
 
-  // Chop off everything after period
-  char *extension_delim = strchr(filename, '.');
-  *extension_delim = '\0';
-
-  // Concat new extension
-  strcat(filename, OUTPUT_EXTENSION);
-  return filename;
-}
-
-int valid_args(int argc, char **argv) {
-  if (argc != 2) {
-    printf("Requires single filename argument");
-    return 0;
+  while (set_curr_cmd(input_file, &curr_cmd, cmd_buffer)) {
+    if(curr_cmd.cmd != NULL && strcmp(curr_cmd.cmd, "") != 0) {
+      write_cmd(&curr_cmd, output_file, static_prefix);
+    }
   }
-
-  FILE* input_file = fopen(argv[1], "r");
-  if (!input_file) {
-    printf("Specified input file does not exist");
-    return 0;
-  } else {
-    fclose(input_file);
-  }
-
-  return 1;
 }
 
 int main(int argc, char **argv) {
-  if (!(valid_args(argc, argv))) {
-    return 1;
-  } else {
-    printf("Parsing file %s\n", argv[1]);
+  if (argc != 2) {
+    printf("Requires single filename or directory argument\n");
+    exit(EXIT_FAILURE);
   }
 
   char *filename = malloc(sizeof(argv[1]));
   strcpy(filename, argv[1]);
 
   char *extension_delim = strchr(filename, '.');
-  *extension_delim = '\0';
-
-  char static_prefix[sizeof(filename)];
-  strcpy(static_prefix, filename);
+  if (extension_delim) { *extension_delim = '\0'; }
 
   strcat(filename, OUTPUT_EXTENSION);
-  char *output_filename =  filename;
-
+  char *output_filename = filename;
   FILE *output_file = fopen(output_filename, "w");
-  FILE *input_file = fopen(argv[1], "r");
-  printf("Outputting to file %s\n", output_filename);
-  free(output_filename);
-  vm_command curr_cmd;
 
-  char cmd_buffer[100];
-  if (input_file == NULL || output_file == NULL) { exit(EXIT_FAILURE); }
+  FILE *input_file;
+  DIR *input_dir;
+  if ((input_dir = opendir(argv[1])) != NULL) {
+    write_init(output_file);
 
-  write_init(output_file);
-  while (set_curr_cmd(input_file, &curr_cmd, cmd_buffer)) {
-    if(curr_cmd.cmd != NULL && strcmp(curr_cmd.cmd, "") != 0) {
-      write_cmd(&curr_cmd, output_file, static_prefix);
+    struct dirent *dir_item;
+    while ((dir_item = readdir(input_dir)) != NULL) {
+      if (!strstr(dir_item -> d_name, INPUT_EXTENSION)) { continue; }
+
+      char *dir_item_path = malloc(sizeof(argv[1]) + sizeof(dir_item -> d_name) + 1);
+      strcpy(dir_item_path, argv[1]);
+      strcat(dir_item_path, "/");
+      strcat(dir_item_path, dir_item -> d_name);
+
+      if ((input_file = fopen(dir_item_path, "r"))) {
+        translate_file(input_file, output_file, dir_item -> d_name);
+      }
     }
+  } else if ((input_file = fopen(argv[1], "r")) != NULL) {
+    write_init(output_file);
+    translate_file(input_file, output_file, filename);
+  } else {
+    printf("Couldn't open specified file or directory\n");
+    exit(EXIT_FAILURE);
   }
+
+  printf("Output to file %s\n", output_filename);
 }
