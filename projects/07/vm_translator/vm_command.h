@@ -12,12 +12,12 @@
 #define C_AND "and"
 #define C_OR "or"
 #define C_NOT "not"
-
 #define C_LABEL "label"
 #define C_GOTO "goto"
 #define C_IF_GOTO "if-goto"
 #define C_FUNCTION "function"
 #define C_RETURN "return"
+#define C_CALL "call"
 
 typedef struct vm_command {
   char* cmd;

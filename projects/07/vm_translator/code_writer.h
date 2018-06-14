@@ -24,6 +24,7 @@ void write_goto(vm_command *command, FILE *output_file);
 void write_if_goto(vm_command *command, FILE *output_file);
 void write_function(vm_command *command, FILE *output_file);
 void write_return(vm_command *command, FILE *output_file);
+void write_call(vm_command *command, FILE *output_file);
 const char *get_segment_symbol(char *segment_name, char *static_prefix);
 void write_offset_increment(char *offset_string, FILE *output_file);
 void write_offset_decrement(char *offset_string, FILE *output_file);
