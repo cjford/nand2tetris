@@ -1,5 +1,10 @@
 #include "vm_translator.h"
 
+void strip_extension(char *filename) {
+  char *extension_delim = strchr(filename, '.');
+  if (extension_delim) { *extension_delim = '\0'; }
+}
+
 void translate_file(FILE *input_file, FILE *output_file, char *static_prefix) {
   vm_command curr_cmd;
   curr_cmd.index = 0;
@@ -20,9 +25,7 @@ int main(int argc, char **argv) {
 
   char *filename = malloc(sizeof(argv[1]));
   strcpy(filename, argv[1]);
-
-  char *extension_delim = strchr(filename, '.');
-  if (extension_delim) { *extension_delim = '\0'; }
+  strip_extension(filename);
 
   strcat(filename, OUTPUT_EXTENSION);
   char *output_filename = filename;
@@ -42,6 +45,7 @@ int main(int argc, char **argv) {
       strcat(dir_item_path, "/");
       strcat(dir_item_path, dir_item -> d_name);
 
+      strip_extension(dir_item -> d_name);
       if ((input_file = fopen(dir_item_path, "r"))) {
         translate_file(input_file, output_file, dir_item -> d_name);
       }
