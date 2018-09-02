@@ -1,12 +1,37 @@
-class Token
-  TOKEN_TYPES = [:keyword, :symbol, :identifier, :int_const, :string_const].freeze
-  SYMBOLS = %w({ } ( ) [ ] . , ; + - * / & | < > = -).freeze
-  KEYWORDS = %w(
-    class constructor function method field static var int char
-    boolean void true false null this let do if else while return
-  ).freeze
+require_relative './token.rb'
+require_relative './language_rules.rb'
 
-  def self.split_regexp
+class Tokenizer
+  include LanguageRules
+
+  def initialize(input_file)
+    @input_file = input_file
+    @tokens = []
+    @current_token_index = 0
+  end
+
+  def tokenize
+    input_string = File.read(input_file)
+    input_string.gsub!(/\/\*.*\*\/|\/\/.*$|^\s*|\s*$/, '')
+
+    token_strings = input_string.split(delimiter_regexp).reject(&:empty?)
+    @tokens = token_strings.map { |token_string| Token.new(token_string) }
+    @current_token_index = 0
+  end
+
+  def advance
+    @current_token_index += 1
+  end
+
+  def current_token
+    tokens[current_token_index]
+  end
+
+  def next_token
+    tokens[current_token_index + 1]
+  end
+
+  def delimiter_regexp
     delimiters = ['\s', '(".*")'] +
       TOKEN_TYPES.map { |type| "(#{type})" } +
       KEYWORDS.map { |keyword| "(#{keyword})" } +
@@ -14,7 +39,8 @@ class Token
 
     Regexp.new(delimiters.join('|'))
   end
-end
 
-input = File.read(ARGV[0]).gsub(/\/\*.*\*\/|\/\/.*$|^\s*|\s*$/, '')
-puts input.split(Token.split_regexp).reject(&:empty?)
+  private
+
+  attr_reader :input_file, :current_token_index, :tokens
+end
