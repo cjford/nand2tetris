@@ -1,5 +1,5 @@
 module LanguageRules
-  TOKEN_TYPES = [:keyword, :symbol, :identifier, :int_const, :string_const].freeze
+  TOKEN_TYPES = [:keyword, :symbol, :identifier, :integerConstant, :stringConstant].freeze
 
   SYMBOLS = %w({ } ( ) [ ] . , ; + - * / & | < > = - &lt; &gt; &amp;).freeze
 

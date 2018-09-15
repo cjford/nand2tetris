@@ -12,8 +12,8 @@ class Token
   def type
     return :keyword if KEYWORDS.include?(value)
     return :symbol if SYMBOLS.include?(value)
-    return :int_const if valid_int_const?
-    return :string_const if valid_string_const?
+    return :integerConstant if valid_int_const?
+    return :stringConstant if valid_string_const?
     return :identifier if valid_identifier?
   end
 
