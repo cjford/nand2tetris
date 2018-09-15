@@ -15,8 +15,21 @@ class Tokenizer
     input_string.gsub!(/\/\*.*\*\/|\/\/.*$|^\s*|\s*$/, '')
 
     token_strings = input_string.split(delimiter_regexp).reject(&:empty?)
+    token_strings = handle_reserved_symbols(token_strings)
+
     @tokens = token_strings.map { |token_string| Token.new(token_string) }
     @current_token_index = 0
+  end
+
+  def handle_reserved_symbols(token_strings)
+    token_strings.map do |token|
+      case token
+      when '<' then '&lt;'
+      when '>' then '&gt;'
+      when '&' then '&amp;'
+      else token
+      end
+    end
   end
 
   def advance
