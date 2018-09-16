@@ -355,7 +355,7 @@ class ParseTree
 
   def accept_subroutine_call_without_receiver
     [
-      accept(:identifer),
+      accept(:identifier),
       accept('('),
       accept_expression_list,
       accept(')')
