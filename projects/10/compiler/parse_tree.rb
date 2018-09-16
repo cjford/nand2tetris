@@ -338,7 +338,7 @@ class ParseTree
   end
 
   def accept_subroutine_call
-    return accept_subroutine_call_without_receiver if next_token == '('
+    return accept_subroutine_call_without_receiver if next_token.value == '('
     accept_subroutine_call_with_receiver
   end
 
