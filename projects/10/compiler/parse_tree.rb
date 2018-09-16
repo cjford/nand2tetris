@@ -19,18 +19,17 @@ class ParseTree
   end
 
   class Node
-    attr_accessor :token, :child_nodes
+    attr_reader :token, :children
+    attr_accessor :parent
 
-    def initialize(token, child_nodes = [])
+    def initialize(token, children = [])
       @token = token
-      @child_nodes = child_nodes
+      @children = children
+      children.compact.each { |child| child.parent = self }
     end
 
-    def add_child(token)
-      child = Node.new(token, self)
-      child_nodes << child
-
-      child
+    def siblings
+      parent.children - [self]
     end
 
     def to_xml(indentation_level = 0)
@@ -42,7 +41,7 @@ class ParseTree
       else
         indentation_level.times { output_string += '  ' }
         output_string += "<#{token}>\n"
-        child_nodes.compact.each do |child|
+        children.compact.each do |child|
           output_string += child.to_xml(indentation_level + 1)
         end
         indentation_level.times { output_string += '  ' }
