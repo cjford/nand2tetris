@@ -282,7 +282,7 @@ class ParseTree
     elsif token.type == :identifier
       if next_token.value == '['
         nodes += accept_array_access
-      elsif next_token.value == '('
+      elsif (next_token.value == '(' || next_token.value == '.')
         nodes += accept_subroutine_call
       else
         nodes << accept(:identifier)
