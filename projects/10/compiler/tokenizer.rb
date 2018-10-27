@@ -47,7 +47,6 @@ class Tokenizer
   def delimiter_regexp
     delimiters = ['\s', '(".*")'] +
       TOKEN_TYPES.map { |type| "(#{type})" } +
-      KEYWORDS.map { |keyword| "(#{keyword})" } +
       SYMBOLS.map { |symbol|  "(\\#{symbol})" }
 
     Regexp.new(delimiters.join('|'))
