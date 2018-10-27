@@ -12,7 +12,7 @@ class Tokenizer
 
   def tokenize
     input_string = File.read(input_file)
-    input_string.gsub!(/\/\*.*\*\/|\/\/.*$|^\s*|\s*$/, '')
+    input_string.gsub!(/\/\*.*(\n.*)*\*\/|\/\/.*$|^\s*|\s*$/, '')
 
     token_strings = input_string.split(delimiter_regexp).reject(&:empty?)
     token_strings = handle_reserved_symbols(token_strings)
