@@ -234,6 +234,9 @@ class ParseTree
       accept(';')
     ]
 
+    symbol = @symbol_table.find(nodes[1].token.value)
+    @writer.write_pop(symbol[:kind], symbol[:index])
+
     Node.new('letStatement', nodes)
   end
 
