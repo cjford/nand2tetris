@@ -8,6 +8,7 @@ class ParseTree
     @tokenizer = tokenizer
     @symbol_table = SymbolTable.new
     @writer = VMWriter.new('./out.vm')
+    @label_id_index = 0
   end
 
   def build
@@ -241,15 +242,29 @@ class ParseTree
   end
 
   def accept_while
+    label_id = @label_id_index
+    @label_id_index += 1
+
+    @writer.write_label("WHILE_#{label_id}_START")
     nodes = [
       accept('while'),
       accept('('),
-      accept_expression,
+      accept_expression
+    ]
+
+    @writer.write_unary_arithmetic('~')
+    @writer.write_if("WHILE_#{label_id}_END")
+
+    nodes += [
       accept(')'),
       accept('{'),
       accept_statements,
       accept('}')
     ]
+
+    @writer.write_goto("WHILE_#{label_id}_START")
+    @writer.write_label("WHILE_#{label_id}_END")
+
 
     Node.new('whileStatement', nodes)
   end
