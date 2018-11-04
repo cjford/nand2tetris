@@ -1,8 +1,11 @@
+require_relative './symbol_table'
+
 class ParseTree
   attr_accessor :root_node
 
   def initialize(tokenizer)
     @tokenizer = tokenizer
+    @symbol_table = SymbolTable.new
   end
 
   def build
@@ -89,15 +92,20 @@ class ParseTree
   end
 
   def accept_class_var_dec
-    nodes = []
+    nodes = [
+      (accept('static') || accept('field')),
+      accept_type,
+      accept(:identifier)
+    ]
 
-    nodes << (accept('static') || accept('field'))
-    nodes << accept_type
-    nodes << accept(:identifier)
+    @symbol_table.define(nodes[2].token.value, nodes[1].token.value, nodes[0].token.value)
 
     while comma = accept(',')
       nodes << comma
+
       nodes << accept(:identifier)
+
+      @symbol_table.define(nodes.last.token.value, nodes[1].token.value, nodes[0].token.value)
     end
 
     nodes << accept(';')
@@ -138,9 +146,13 @@ class ParseTree
 
     return Node.new('parameterList') if nodes.count < 2
 
+    @symbol_table.define(nodes[1].token.value, nodes[0].token.value, 'argument')
+
     while comma = accept(',')
       nodes << comma
       nodes += [accept_type, accept(:identifier)]
+
+      @symbol_table.define(nodes.last.token.value, nodes.last(2).first.token.value, 'argument')
     end
 
     Node.new('parameterList', nodes)
@@ -153,9 +165,13 @@ class ParseTree
       accept(:identifier)
     ]
 
+    @symbol_table.define(nodes[2].token.value, nodes[1].token.value, 'var')
+
     while comma = accept(',')
       nodes << comma
       nodes << accept(:identifier)
+
+      @symbol_table.define(nodes.last.token.value, nodes[1].token.value, 'var')
     end
 
     nodes << accept(';')
