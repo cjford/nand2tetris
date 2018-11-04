@@ -280,17 +280,29 @@ class ParseTree
   end
 
   def accept_if
+    label_id = @label_id_index
+    @label_id_index += 1
+
     nodes = [
       accept('if'),
       accept('('),
-      accept_expression,
+      accept_expression
+    ]
+
+    @writer.write_unary_arithmetic('~')
+    @writer.write_if("ELSE_#{label_id}")
+
+    [
       accept(')'),
       accept('{'),
       accept_statements,
       accept('}')
     ]
 
+    @writer.write_goto("IF_#{label_id}_END")
+
     if token.value == 'else'
+      @writer.write_label("ELSE_#{label_id}")
       nodes += [
         accept('else'),
         accept('{'),
@@ -298,6 +310,8 @@ class ParseTree
         accept('}')
       ]
     end
+
+    @writer.write_label("IF_#{label_id}_END")
 
     Node.new('ifStatement', nodes)
   end
