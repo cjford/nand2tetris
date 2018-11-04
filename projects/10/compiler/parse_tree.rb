@@ -1,4 +1,5 @@
 require_relative './symbol_table'
+require_relative './vm_writer'
 
 class ParseTree
   attr_accessor :root_node
@@ -6,6 +7,7 @@ class ParseTree
   def initialize(tokenizer)
     @tokenizer = tokenizer
     @symbol_table = SymbolTable.new
+    @writer = VMWriter.new('./out.vm')
   end
 
   def build
@@ -118,10 +120,18 @@ class ParseTree
     nodes = []
 
     nodes << (accept('constructor') || accept('function') || accept('method'))
+    function_type = nodes.last.token.value
+
     nodes << (accept('void') || accept_type)
     nodes << accept(:identifier)
+
+    function_name = nodes.last.token.value
     nodes << accept('(')
     nodes << accept_parameter_list
+    parameter_count = nodes.last.children.count
+    parameter_count += 1 if function_type == 'method'
+
+    @writer.write_function(function_name, parameter_count)
     nodes << accept(')')
     nodes << accept_subroutine_body
 
