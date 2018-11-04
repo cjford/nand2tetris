@@ -212,6 +212,8 @@ class ParseTree
     nodes += accept_subroutine_call
     nodes << accept(';')
 
+    @writer.write_pop('temp', 0)
+
     Node.new('doStatement', nodes)
   end
 
