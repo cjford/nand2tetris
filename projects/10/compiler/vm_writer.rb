@@ -39,7 +39,7 @@ class VMWriter
   end
 
   def write_label(label)
-    output_file.write("(#{label})\n")
+    output_file.write("label #{label}\n")
   end
 
   def write_goto(label)
