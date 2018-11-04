@@ -84,6 +84,7 @@ class ParseTree
 
     while ['constructor', 'function', 'method'].include?(token.value)
       nodes << accept_subroutine_dec
+      @symbol_table.start_subroutine
     end
 
     nodes << accept('}')
