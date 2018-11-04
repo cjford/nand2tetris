@@ -76,10 +76,13 @@ class ParseTree
   end
 
   def accept_class
-    nodes = []
-    nodes << accept('class')
-    nodes << accept(:identifier)
-    nodes << accept('{')
+    nodes = [
+      accept('class'),
+      accept(:identifier),
+      accept('{')
+    ]
+
+    @class_name = nodes[1].token.value
 
     while ['static', 'field'].include?(token.value)
       nodes << accept_class_var_dec
@@ -126,24 +129,27 @@ class ParseTree
     nodes << (accept('void') || accept_type)
     nodes << accept(:identifier)
 
-    function_name = nodes.last.token.value
+    function_name = "#{@class_name}.#{nodes.last.token.value}"
+
     nodes << accept('(')
     nodes << accept_parameter_list
-    parameter_count = nodes.last.children.count
-    parameter_count += 1 if function_type == 'method'
 
-    @writer.write_function(function_name, parameter_count)
     nodes << accept(')')
-    nodes << accept_subroutine_body
+    nodes << accept_subroutine_body(function_name)
 
     Node.new('subroutineDec', nodes)
   end
 
 
-  def accept_subroutine_body
+  def accept_subroutine_body(function_name)
     nodes = [ accept('{') ]
 
     nodes << accept_var_dec while token.value == 'var'
+
+    var_dec_nodes = nodes.select { |n| n.token == 'varDec' }
+    local_var_count = var_dec_nodes.map(&:children).flatten.count { |n| n.token.type == :identifier }
+
+    @writer.write_function(function_name, local_var_count)
 
     nodes += [
       accept_statements,
