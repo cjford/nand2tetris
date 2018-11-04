@@ -276,6 +276,9 @@ class ParseTree
       accept(';')
     ]
 
+    @writer.write_push('constant', 0) if nodes[1].nil?
+    @writer.write_return
+
     Node.new('returnStatement', nodes)
   end
 
