@@ -292,6 +292,8 @@ class ParseTree
     while op = accept_op
       nodes << op
       nodes << accept_term
+
+      @writer.write_arithmetic(op.token.value)
     end
 
     Node.new('expression', nodes)
@@ -306,6 +308,14 @@ class ParseTree
         accept_expression,
         accept(')')
       ]
+    elsif ['-', '~'].include? token.value
+      unary_op = accept_unary_op
+      nodes += [
+        unary_op,
+        accept_term
+      ]
+
+      @writer.write_unary_arithmetic(unary_op.token.value)
     elsif token.type == :identifier
       if next_token.value == '['
         nodes += accept_array_access
@@ -313,14 +323,16 @@ class ParseTree
         nodes += accept_subroutine_call
       else
         nodes << accept(:identifier)
+
+        symbol = @symbol_table.find(nodes.last.token.value)
+        @writer.write_push(symbol[:kind], symbol[:index])
       end
-    elsif ['-', '~'].include? token.value
-      nodes += [
-        accept_unary_op,
-        accept_term
-      ]
     else
-      nodes << (accept(:integerConstant) || accept(:stringConstant) || accept_keyword_const || accept_unary_op)
+      new_node = (accept(:integerConstant) || accept(:stringConstant) || accept_keyword_const || accept_unary_op)
+      if new_node
+        nodes << new_node
+        @writer.write_push('constant', new_node.token.value)
+      end
     end
 
     return if nodes.compact.empty?
@@ -369,22 +381,34 @@ class ParseTree
   end
 
   def accept_subroutine_call_with_receiver
-    [
+    nodes = [
       accept(:identifier),
       accept('.'),
       accept(:identifier),
-      accept('('),
-      accept_expression_list,
-      accept(')')
+      accept('(')
     ]
+
+    expression_list = accept_expression_list
+    nodes << expression_list
+    nodes << accept(')')
+
+    function_name = nodes.first(3).map { |n| n.token.value } .join
+    argument_count = expression_list.children.count { |list| list.token == 'expression' }
+    @writer.write_call(function_name, argument_count)
+
+    nodes
   end
 
   def accept_subroutine_call_without_receiver
-    [
+    nodes = [
       accept(:identifier),
       accept('('),
-      accept_expression_list,
-      accept(')')
     ]
+
+    expression_list = accept_expression_list
+    nodes << accept(')')
+
+    @writer.write_call(nodes.first.token.value, expression_list.children.count)
+    nodes
   end
 end
