@@ -368,7 +368,16 @@ class ParseTree
       new_node = (accept(:integerConstant) || accept(:stringConstant) || accept_keyword_const || accept_unary_op)
       if new_node
         nodes << new_node
-        @writer.write_push('constant', new_node.token.value)
+
+        value = nodes.last.token.value
+        if value == 'true'
+          @writer.write_push('constant', 1)
+          @writer.write_unary_arithmetic('-')
+        elsif value == 'false' || value == 'null'
+          @writer.write_push('constant', 0)
+        else
+          @writer.write_push('constant', new_node.token.value)
+        end
       end
     end
 
