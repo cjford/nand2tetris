@@ -231,11 +231,17 @@ class ParseTree
     ]
 
     if token.value == '['
+      array_assignment = true
       nodes += [
         accept('['),
         accept_expression,
         accept(']')
       ]
+
+      symbol = @symbol_table.find(nodes[1].token.value)
+      @writer.write_push(symbol[:kind], symbol[:index])
+      @writer.write_arithmetic('+')
+      @writer.write_pop('pointer', 1)
     end
 
     nodes += [
@@ -244,8 +250,12 @@ class ParseTree
       accept(';')
     ]
 
-    symbol = @symbol_table.find(nodes[1].token.value)
-    @writer.write_pop(symbol[:kind], symbol[:index])
+    if array_assignment
+      @writer.write_pop('that', 0)
+    else
+      symbol = @symbol_table.find(nodes[1].token.value)
+      @writer.write_pop(symbol[:kind], symbol[:index])
+    end
 
     Node.new('letStatement', nodes)
   end
@@ -419,12 +429,21 @@ class ParseTree
   end
 
   def accept_array_access
-    [
+    nodes = [
       accept(:identifier),
       accept('['),
       accept_expression,
       accept(']')
     ]
+
+    symbol = @symbol_table.find(nodes[0].token.value)
+    @writer.write_push(symbol[:kind], symbol[:index])
+    @writer.write_arithmetic('+')
+    @writer.write_pop('pointer', 1)
+    @writer.write_push('that', 0)
+
+
+    nodes
   end
 
   def accept_expression_list
