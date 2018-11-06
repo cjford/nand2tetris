@@ -376,14 +376,27 @@ class ParseTree
       if new_node
         nodes << new_node
 
-        value = nodes.last.token.value
-        if value == 'true'
-          @writer.write_push('constant', 1)
-          @writer.write_unary_arithmetic('-')
-        elsif value == 'false' || value == 'null'
-          @writer.write_push('constant', 0)
+        if new_node.token.type == :stringConstant
+          string = new_node.token.value
+          string.gsub!('"', '')
+
+          @writer.write_push('constant', string.length)
+          @writer.write_call('String.new', 1)
+
+          string.split('').each do |char|
+            @writer.write_push('constant', char.ord)
+            @writer.write_call('String.appendChar', 2)
+          end
         else
-          @writer.write_push('constant', new_node.token.value)
+          value = nodes.last.token.value
+          if value == 'true'
+            @writer.write_push('constant', 1)
+            @writer.write_unary_arithmetic('-')
+          elsif value == 'false' || value == 'null'
+            @writer.write_push('constant', 0)
+          else
+            @writer.write_push('constant', new_node.token.value)
+          end
         end
       end
     end
