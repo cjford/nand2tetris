@@ -147,7 +147,8 @@ class ParseTree
     nodes << accept_var_dec while token.value == 'var'
 
     var_dec_nodes = nodes.select { |n| n.token == 'varDec' }
-    local_var_count = var_dec_nodes.map(&:children).flatten.count { |n| n.token.type == :identifier }
+    local_var_count = var_dec_nodes.count
+    local_var_count += var_dec_nodes.map(&:children).flatten.count { |n| n.token.value == ',' }
 
     @writer.write_function(function_name, local_var_count)
 
