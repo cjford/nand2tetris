@@ -135,13 +135,13 @@ class ParseTree
     nodes << accept_parameter_list
 
     nodes << accept(')')
-    nodes << accept_subroutine_body(function_name)
+    nodes << accept_subroutine_body(function_type, function_name)
 
     Node.new('subroutineDec', nodes)
   end
 
 
-  def accept_subroutine_body(function_name)
+  def accept_subroutine_body(function_type, function_name)
     nodes = [ accept('{') ]
 
     nodes << accept_var_dec while token.value == 'var'
@@ -151,6 +151,15 @@ class ParseTree
     local_var_count += var_dec_nodes.map(&:children).flatten.count { |n| n.token.value == ',' }
 
     @writer.write_function(function_name, local_var_count)
+
+    if function_type == 'constructor'
+      @writer.write_push('constant', @symbol_table.count('field'))
+      @writer.write_call('Memory.alloc', 1)
+      @writer.write_pop('pointer', 0)
+    elsif function_type == 'method'
+      @writer.write_push('argument', 0)
+      @writer.write_pop('pointer', 0)
+    end
 
     nodes += [
       accept_statements,
@@ -397,6 +406,8 @@ class ParseTree
             @writer.write_push('constant', char.ord)
             @writer.write_call('String.appendChar', 2)
           end
+        elsif new_node.token.value == 'this'
+          @writer.write_push('pointer', 0)
         else
           value = nodes.last.token.value
           if value == 'true'
