@@ -1,7 +1,7 @@
 module LanguageRules
   TOKEN_TYPES = [:keyword, :symbol, :identifier, :integerConstant, :stringConstant].freeze
 
-  SYMBOLS = %w({ } ( ) [ ] . , ; + - * / & | < > = - &lt; &gt; &amp;).freeze
+  SYMBOLS = %w({ } ( ) [ ] . , ; + - * / & | < > = - ~ &lt; &gt; &amp;).freeze
 
   KEYWORDS = %w(
     class constructor function method field static var int char
