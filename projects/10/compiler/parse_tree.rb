@@ -239,7 +239,7 @@ class ParseTree
       ]
 
       symbol = @symbol_table.find(nodes[1].token.value)
-      @writer.write_push(symbol[:kind], symbol[:index])
+      @writer.write_push(symbol[:segment], symbol[:index])
       @writer.write_arithmetic('+')
       @writer.write_pop('pointer', 1)
     end
@@ -254,7 +254,7 @@ class ParseTree
       @writer.write_pop('that', 0)
     else
       symbol = @symbol_table.find(nodes[1].token.value)
-      @writer.write_pop(symbol[:kind], symbol[:index])
+      @writer.write_pop(symbol[:segment], symbol[:index])
     end
 
     Node.new('letStatement', nodes)
@@ -379,7 +379,7 @@ class ParseTree
         nodes << accept(:identifier)
 
         symbol = @symbol_table.find(nodes.last.token.value)
-        @writer.write_push(symbol[:kind], symbol[:index])
+        @writer.write_push(symbol[:segment], symbol[:index])
       end
     else
       new_node = (accept(:integerConstant) || accept(:stringConstant) || accept_keyword_const || accept_unary_op)
@@ -437,7 +437,7 @@ class ParseTree
     ]
 
     symbol = @symbol_table.find(nodes[0].token.value)
-    @writer.write_push(symbol[:kind], symbol[:index])
+    @writer.write_push(symbol[:segment], symbol[:index])
     @writer.write_arithmetic('+')
     @writer.write_pop('pointer', 1)
     @writer.write_push('that', 0)
@@ -482,7 +482,7 @@ class ParseTree
     if symbol = @symbol_table.find(nodes[0].token.value)
       function_name = "#{symbol[:type]}.#{nodes[2].token.value}"
       argument_count += 1
-      @writer.write_push(symbol[:kind], symbol[:index]) if symbol
+      @writer.write_push(symbol[:segment], symbol[:index]) if symbol
     else
       function_name = "#{nodes[0].token.value}.#{nodes[2].token.value}"
     end

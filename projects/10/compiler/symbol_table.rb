@@ -13,6 +13,7 @@ class SymbolTable
       name: name,
       type: type,
       kind: kind,
+      segment: segment(kind),
       index: count(kind)
     }
   end
@@ -25,6 +26,15 @@ class SymbolTable
 
   def count(kind)
     scope(kind).count { |symbol| symbol[:kind] == kind }
+  end
+
+  def segment(kind)
+    case kind
+    when 'argument' then 'argument'
+    when 'field'    then 'this'
+    when 'var'      then 'local'
+    when 'satic'    then 'static'
+    end
   end
 
   def find(name)
