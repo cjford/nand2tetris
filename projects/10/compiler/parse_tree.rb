@@ -193,13 +193,13 @@ class ParseTree
       accept(:identifier)
     ]
 
-    @symbol_table.define(nodes[2].token.value, nodes[1].token.value, 'local')
+    @symbol_table.define(nodes[2].token.value, nodes[1].token.value, 'var')
 
     while comma = accept(',')
       nodes << comma
       nodes << accept(:identifier)
 
-      @symbol_table.define(nodes.last.token.value, nodes[1].token.value, 'local')
+      @symbol_table.define(nodes.last.token.value, nodes[1].token.value, 'var')
     end
 
     nodes << accept(';')
