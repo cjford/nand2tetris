@@ -331,9 +331,9 @@ class ParseTree
     ]
 
     @writer.write_goto("IF_#{label_id}_END")
+    @writer.write_label("ELSE_#{label_id}")
 
     if token.value == 'else'
-      @writer.write_label("ELSE_#{label_id}")
       nodes += [
         accept('else'),
         accept('{'),
