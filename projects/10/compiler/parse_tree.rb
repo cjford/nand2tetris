@@ -477,8 +477,16 @@ class ParseTree
     nodes << expression_list
     nodes << accept(')')
 
-    function_name = nodes.first(3).map { |n| n.token.value } .join
     argument_count = expression_list.children.count { |list| list.token == 'expression' }
+
+    if symbol = @symbol_table.find(nodes[0].token.value)
+      function_name = "#{symbol[:type]}.#{nodes[2].token.value}"
+      argument_count += 1
+      @writer.write_push(symbol[:kind], symbol[:index]) if symbol
+    else
+      function_name = "#{nodes[0].token.value}.#{nodes[2].token.value}"
+    end
+
     @writer.write_call(function_name, argument_count)
 
     nodes
@@ -487,13 +495,15 @@ class ParseTree
   def accept_subroutine_call_without_receiver
     nodes = [
       accept(:identifier),
-      accept('('),
+      accept('(')
     ]
 
     expression_list = accept_expression_list
     nodes << accept(')')
 
-    @writer.write_call(nodes.first.token.value, expression_list.children.count)
+    @writer.write_push('pointer', 0)
+    @writer.write_call("#{@class_name}.#{nodes[0].token.value}", nodes[2].children.count + 1)
+
     nodes
   end
 end
