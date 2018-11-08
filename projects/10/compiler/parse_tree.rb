@@ -510,10 +510,12 @@ class ParseTree
     ]
 
     expression_list = accept_expression_list
+    argument_count = expression_list.children.count { |list| list.token == 'expression' } + 1
+    nodes << expression_list
     nodes << accept(')')
 
     @writer.write_push('pointer', 0)
-    @writer.write_call("#{@class_name}.#{nodes[0].token.value}", nodes[2].children.count + 1)
+    @writer.write_call("#{@class_name}.#{nodes[0].token.value}", argument_count)
 
     nodes
   end
