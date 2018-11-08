@@ -135,6 +135,8 @@ class ParseTree
     nodes << accept_parameter_list
 
     nodes << accept(')')
+
+    @symbol_table.increment_argument_indicies if function_type == 'method'
     nodes << accept_subroutine_body(function_type, function_name)
 
     Node.new('subroutineDec', nodes)

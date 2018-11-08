@@ -28,6 +28,10 @@ class SymbolTable
     scope(kind).count { |symbol| symbol[:kind] == kind }
   end
 
+  def increment_argument_indicies
+    @subroutine_scope.each { |symbol| symbol[:index] += 1 if symbol[:kind] == 'argument' }
+  end
+
   def segment(kind)
     puts "SEGMENT for #{kind} "
     case kind
