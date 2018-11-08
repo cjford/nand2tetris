@@ -29,11 +29,12 @@ class SymbolTable
   end
 
   def segment(kind)
+    puts "SEGMENT for #{kind} "
     case kind
     when 'argument' then 'argument'
     when 'field'    then 'this'
     when 'var'      then 'local'
-    when 'satic'    then 'static'
+    when 'static'   then 'static'
     end
   end
 
