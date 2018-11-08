@@ -486,19 +486,20 @@ class ParseTree
       accept('(')
     ]
 
+    if symbol = @symbol_table.find(nodes[0].token.value)
+      function_name = "#{symbol[:type]}.#{nodes[2].token.value}"
+      argument_count = 1
+      @writer.write_push(symbol[:segment], symbol[:index]) if symbol
+    else
+      argument_count = 0
+      function_name = "#{nodes[0].token.value}.#{nodes[2].token.value}"
+    end
+
     expression_list = accept_expression_list
     nodes << expression_list
     nodes << accept(')')
 
-    argument_count = expression_list.children.count { |list| list.token == 'expression' }
-
-    if symbol = @symbol_table.find(nodes[0].token.value)
-      function_name = "#{symbol[:type]}.#{nodes[2].token.value}"
-      argument_count += 1
-      @writer.write_push(symbol[:segment], symbol[:index]) if symbol
-    else
-      function_name = "#{nodes[0].token.value}.#{nodes[2].token.value}"
-    end
+    argument_count += expression_list.children.count { |list| list.token == 'expression' }
 
     @writer.write_call(function_name, argument_count)
 
@@ -511,12 +512,13 @@ class ParseTree
       accept('(')
     ]
 
+    @writer.write_push('pointer', 0)
+
     expression_list = accept_expression_list
     argument_count = expression_list.children.count { |list| list.token == 'expression' } + 1
     nodes << expression_list
     nodes << accept(')')
 
-    @writer.write_push('pointer', 0)
     @writer.write_call("#{@class_name}.#{nodes[0].token.value}", argument_count)
 
     nodes
