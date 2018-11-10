@@ -252,7 +252,7 @@ class ParseTree
       symbol = @symbol_table.find(nodes[1].token.value)
       @writer.write_push(symbol[:segment], symbol[:index])
       @writer.write_arithmetic('+')
-      @writer.write_pop('pointer', 1)
+      @writer.write_pop('temp', 0)
     end
 
     nodes += [
@@ -260,6 +260,9 @@ class ParseTree
       accept_expression,
       accept(';')
     ]
+
+    @writer.write_push('temp', 0)
+    @writer.write_pop('pointer', 1)
 
     if array_assignment
       @writer.write_pop('that', 0)
