@@ -4,16 +4,20 @@ require_relative './vm_writer'
 class ParseTree
   attr_accessor :root_node
 
-  def initialize(tokenizer)
+  def initialize(tokenizer, input_file)
     @tokenizer = tokenizer
+    @input_file = input_file
+
     @symbol_table = SymbolTable.new
-    @writer = VMWriter.new('./out.vm')
+    @writer = VMWriter.new(@input_file.gsub('.jack', '.vm'))
     @label_id_index = 0
   end
 
   def build
     @tokenizer.tokenize
     @root_node = accept_class
+
+    File.open(@input_file.gsub('.jack', '.xml'), 'w+') {|f| f.write(@root_node.to_xml)}
   end
 
   def token
