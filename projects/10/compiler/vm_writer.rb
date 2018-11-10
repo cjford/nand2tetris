@@ -22,8 +22,8 @@ class VMWriter
       when '&amp;' then 'and'
       when '&lt;'  then 'lt'
       when '&gt;'  then 'gt'
-      else "unkown arithmetic symbol #{op_symbol}"
-      end
+      else         raise "Unkown arithmetic symbol #{op_symbol}"
+    end
 
     @output_file.write("#{command}\n")
   end
@@ -32,8 +32,8 @@ class VMWriter
     command = case op_symbol
       when '~' then 'not'
       when '-' then 'neg'
-      else 'unkown unary arithmetic symbol'
-      end
+      else     raise "unkown unary arithmetic symbol #{op_symbol}"
+    end
 
     @output_file.write("#{command}\n")
   end
