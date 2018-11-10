@@ -34,15 +34,15 @@ class SymbolTable
 
   def segment(kind)
     case kind
-    when 'argument' then 'argument'
-    when 'field'    then 'this'
-    when 'var'      then 'local'
-    when 'static'   then 'static'
+      when 'argument' then 'argument'
+      when 'field'    then 'this'
+      when 'var'      then 'local'
+      when 'static'   then 'static'
     end
   end
 
   def find(name)
-    @subroutine_scope.select { |symbol| symbol[:name] == name}.first ||
-    @class_scope.select { |symbol| symbol[:name] == name}.first
+    @subroutine_scope.select { |symbol| symbol[:name] == name }.first ||
+    @class_scope.select { |symbol| symbol[:name] == name }.first
   end
 end

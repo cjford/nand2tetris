@@ -15,7 +15,7 @@ class ParseTree
     @tokenizer.tokenize
     @root_node = accept_class
 
-    File.open(@input_file.gsub('.jack', '.xml'), 'w+') {|f| f.write(@root_node.to_xml)}
+    File.open(@input_file.gsub('.jack', '.xml'), 'w+') { |f| f.write(@root_node.to_xml) }
   end
 
   def token
@@ -34,10 +34,6 @@ class ParseTree
       @token = token
       @children = children
       children.compact.each { |child| child.parent = self }
-    end
-
-    def siblings
-      parent.children - [self]
     end
 
     def to_xml(indentation_level = 0)
@@ -123,20 +119,21 @@ class ParseTree
   end
 
   def accept_subroutine_dec
-    nodes = []
-
-    nodes << (accept('constructor') || accept('function') || accept('method'))
+    nodes =  [ (accept('constructor') || accept('function') || accept('method')) ]
     function_type = nodes.last.token.value
 
-    nodes << (accept('void') || accept_type)
-    nodes << accept(:identifier)
+    nodes += [
+      (accept('void') || accept_type),
+      accept(:identifier)
+    ]
 
     function_name = "#{@class_name}.#{nodes.last.token.value}"
 
-    nodes << accept('(')
-    nodes << accept_parameter_list
-
-    nodes << accept(')')
+    nodes += [
+      accept('('),
+      accept_parameter_list,
+      accept(')')
+    ]
 
     @symbol_table.increment_argument_indicies if function_type == 'method'
     nodes << accept_subroutine_body(function_type, function_name)
@@ -219,11 +216,11 @@ class ParseTree
 
   def accept_statement
     case token.value
-    when 'let'    then accept_let
-    when 'if'     then accept_if
-    when 'while'  then accept_while
-    when 'do'     then accept_do
-    when 'return' then accept_return
+      when 'let'    then accept_let
+      when 'if'     then accept_if
+      when 'while'  then accept_while
+      when 'do'     then accept_do
+      when 'return' then accept_return
     end
   end
 
@@ -330,7 +327,7 @@ class ParseTree
     @writer.write_unary_arithmetic('~')
     @writer.write_if("ELSE_#{label_id}")
 
-    [
+    nodes += [
       accept(')'),
       accept('{'),
       accept_statements,
@@ -397,36 +394,9 @@ class ParseTree
         symbol = @symbol_table.find(nodes.last.token.value)
         @writer.write_push(symbol[:segment], symbol[:index])
       end
-    else
-      new_node = (accept(:integerConstant) || accept(:stringConstant) || accept_keyword_const || accept_unary_op)
-      if new_node
-        nodes << new_node
-
-        if new_node.token.type == :stringConstant
-          string = new_node.token.value
-          string.gsub!('"', '')
-
-          @writer.write_push('constant', string.length)
-          @writer.write_call('String.new', 1)
-
-          string.split('').each do |char|
-            @writer.write_push('constant', char.ord)
-            @writer.write_call('String.appendChar', 2)
-          end
-        elsif new_node.token.value == 'this'
-          @writer.write_push('pointer', 0)
-        else
-          value = nodes.last.token.value
-          if value == 'true'
-            @writer.write_push('constant', 1)
-            @writer.write_unary_arithmetic('-')
-          elsif value == 'false' || value == 'null'
-            @writer.write_push('constant', 0)
-          else
-            @writer.write_push('constant', new_node.token.value)
-          end
-        end
-      end
+    elsif new_node = (accept(:integerConstant) || accept(:stringConstant) || accept_keyword_const)
+      nodes << new_node
+      write_constant_term(new_node)
     end
 
     return if nodes.compact.empty?
@@ -459,7 +429,6 @@ class ParseTree
     @writer.write_arithmetic('+')
     @writer.write_pop('pointer', 1)
     @writer.write_push('that', 0)
-
 
     nodes
   end
@@ -527,5 +496,32 @@ class ParseTree
     @writer.write_call("#{@class_name}.#{nodes[0].token.value}", argument_count)
 
     nodes
+  end
+
+  def write_constant_term(new_node)
+    if new_node.token.type == :stringConstant
+      string = new_node.token.value
+      string.gsub!('"', '')
+
+      @writer.write_push('constant', string.length)
+      @writer.write_call('String.new', 1)
+
+      string.split('').each do |char|
+        @writer.write_push('constant', char.ord)
+        @writer.write_call('String.appendChar', 2)
+      end
+    elsif new_node.token.value == 'this'
+      @writer.write_push('pointer', 0)
+    else
+      value = new_node.token.value
+      if value == 'true'
+        @writer.write_push('constant', 1)
+        @writer.write_unary_arithmetic('-')
+      elsif value == 'false' || value == 'null'
+        @writer.write_push('constant', 0)
+      else
+        @writer.write_push('constant', value)
+      end
+    end
   end
 end
