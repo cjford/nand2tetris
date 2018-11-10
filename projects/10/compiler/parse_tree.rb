@@ -2,8 +2,6 @@ require_relative './symbol_table'
 require_relative './vm_writer'
 
 class ParseTree
-  attr_accessor :root_node
-
   def initialize(tokenizer, input_file)
     @tokenizer = tokenizer
     @input_file = input_file

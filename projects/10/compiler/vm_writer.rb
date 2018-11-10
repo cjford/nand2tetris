@@ -4,11 +4,11 @@ class VMWriter
   end
 
   def write_push(segment, index)
-    output_file.write("push #{segment} #{index}\n")
+    @output_file.write("push #{segment} #{index}\n")
   end
 
   def write_pop(segment, index)
-    output_file.write("pop #{segment} #{index}\n")
+    @output_file.write("pop #{segment} #{index}\n")
   end
 
   def write_arithmetic(op_symbol)
@@ -25,7 +25,7 @@ class VMWriter
       else "unkown arithmetic symbol #{op_symbol}"
       end
 
-    output_file.write("#{command}\n")
+    @output_file.write("#{command}\n")
   end
 
    def write_unary_arithmetic(op_symbol)
@@ -35,38 +35,34 @@ class VMWriter
       else 'unkown unary arithmetic symbol'
       end
 
-    output_file.write("#{command}\n")
+    @output_file.write("#{command}\n")
   end
 
   def write_label(label)
-    output_file.write("label #{label}\n")
+    @output_file.write("label #{label}\n")
   end
 
   def write_goto(label)
-    output_file.write("goto #{label}\n")
+    @output_file.write("goto #{label}\n")
   end
 
   def write_if(label)
-    output_file.write("if-goto #{label}\n")
+    @output_file.write("if-goto #{label}\n")
   end
 
   def write_call(function_name, arg_count)
-    output_file.write("call #{function_name} #{arg_count}\n")
+    @output_file.write("call #{function_name} #{arg_count}\n")
   end
 
   def write_function(function_name, local_count)
-    output_file.write("function #{function_name} #{local_count}\n")
+    @output_file.write("function #{function_name} #{local_count}\n")
   end
 
   def write_return
-    output_file.write("return\n")
+    @output_file.write("return\n")
   end
 
   def close
     @output_file.close
   end
-
-  private
-
-  attr_reader :output_file
 end

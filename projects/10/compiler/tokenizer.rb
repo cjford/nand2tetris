@@ -11,7 +11,7 @@ class Tokenizer
   end
 
   def tokenize
-    input_string = File.read(input_file)
+    input_string = File.read(@input_file)
     input_string.gsub!(/\/\*(.|\n)*?\*\/|\/\/.*$|^\s*|\s*$/, '')
 
     token_strings = input_string.split(delimiter_regexp).reject(&:empty?)
@@ -37,11 +37,11 @@ class Tokenizer
   end
 
   def current_token
-    tokens[current_token_index]
+    @tokens[@current_token_index]
   end
 
   def next_token
-    tokens[current_token_index + 1]
+    @tokens[@current_token_index + 1]
   end
 
   def delimiter_regexp
@@ -51,8 +51,4 @@ class Tokenizer
 
     Regexp.new(delimiters.join('|'))
   end
-
-  private
-
-  attr_reader :input_file, :current_token_index, :tokens
 end
