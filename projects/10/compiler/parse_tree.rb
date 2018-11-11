@@ -41,7 +41,7 @@ class ParseTree
 
       if token.is_a?(Token)
         indentation_level.times { output_string += '  ' }
-        output_string += "<#{token.type}> #{token.value} </#{token.type}>\n"
+        output_string += "<#{token.type}> #{token.value.gsub('"', '')} </#{token.type}>\n"
       else
         indentation_level.times { output_string += '  ' }
         output_string += "<#{token}>\n"
@@ -500,7 +500,7 @@ class ParseTree
 
   def write_constant_term(new_node)
     if new_node.token.type == :stringConstant
-      string = new_node.token.value
+      string = new_node.token.value.dup
       string.gsub!('"', '')
 
       @writer.write_push('constant', string.length)
