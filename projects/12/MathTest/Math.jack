@@ -1,0 +1,134 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Math.jack
+
+/**
+ * A library of commonly used mathematical functions.
+ * Note: Jack compilers implement multiplication and division using OS method calls.
+ */
+class Math {
+
+    /** Initializes the library. */
+    function void init() {
+      return;
+    }
+
+    /** Returns the absolute value of x. */
+    function int abs(int x) {
+      var int value;
+    
+      if (x < 0) {
+        let value = -x;
+      } else {
+        let value = x;
+      }
+
+      return value;
+    }
+
+    /** Returns the product of x and y. 
+     *  When a Jack compiler detects the multiplication operator '*' in the 
+     *  program's code, it handles it by invoking this method. In other words,
+     *  the Jack expressions x*y and multiply(x,y) return the same value.
+     */
+    function int multiply(int x, int y) {
+      var int count, total;
+
+      while (count < Math.abs(y)) {
+        let total = total + Math.abs(x);
+        let count = count + 1;
+      }
+
+      return Math.signed_output(x, y, total);
+    }
+
+    /** Returns the integer part of x/y.
+     *  When a Jack compiler detects the multiplication operator '/' in the 
+     *  program's code, it handles it by invoking this method. In other words,
+     *  the Jack expressions x/y and divide(x,y) return the same value.
+     */
+    function int divide(int x, int y) {
+      var int count, total;
+      
+      let total = Math.abs(x);
+
+      while (((total - Math.abs(y)) > 0) | ((total - Math.abs(y)) = 0)) {
+        let total = total - Math.abs(y);
+        let count = count + 1;
+      }
+
+      return Math.signed_output(x, y, count);
+    }
+
+    /** Returns a product/quotient with the proper sign, based on the signs of the operands x and y.
+     *  Multiplication and division are performed with absolute values with the sign applied at the end.
+     */
+    function boolean signed_output(int x, int y, int output) {
+      var int output;
+
+      if (((x < 0) & (y > 0)) | ((y < 0) & (x > 0))) {
+        let output = output - output - output;
+      } else { 
+        let output = output;
+      }
+
+      return output;
+    }
+
+    /** Returns x to the power of y */
+    function int pow(int x, int y) {
+      var int count, total;
+
+      if (y = 0) { return 1; }
+
+      let count = 1;
+      let total = x;
+
+      while (count < y) {
+        let total = total * x;
+        let count = count + 1;
+      }
+
+      return total;
+    }
+
+    /** Returns the integer part of the square root of x. */
+    function int sqrt(int x) {
+      var int a, b;
+
+      let a = 1;
+      let b = x;
+
+      while (Math.abs(a - b) > 1) {
+        let a = (a + b) / 2;
+        let b = x / a;
+      }
+
+      return Math.abs(a);
+    }
+
+    /** Returns the greater number. */
+    function int max(int a, int b) {
+      var int max;
+      
+      let max = a;
+      if (b > a) {
+        let max = b;
+      }
+
+      return max;
+    }
+
+    /** Returns the smaller number. */
+    function int min(int a, int b) {
+      var int min;
+
+      let min = a;
+      if (b < a) {
+        let min = b;
+      }
+
+      return min;
+    }
+}
